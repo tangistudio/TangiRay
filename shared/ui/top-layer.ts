@@ -106,14 +106,18 @@ function keepPageBehind(ctx: TangiTweak.RunCtx, name: string, modal: { open: boo
         const keys = new Set((root.dataset.wtModals ?? "").split(" ").filter(Boolean));
         if (open) keys.add(key); else keys.delete(key);
         if (keys.size) root.dataset.wtModals = [...keys].join(" "); else delete root.dataset.wtModals;
+        const body = document.body;
+        // run at document start: no <body> yet, synced again once it's parsed
+        if (!body) return;
         const kept = [...document.querySelectorAll(KEEP)];
-        const targets = kept.some((el) => document.body.contains(el))
-            ? [...document.body.children].filter((el) => !kept.some((k) => el.contains(k)))
-            : [document.body];
+        const targets = kept.some((el) => body.contains(el))
+            ? [...body.children].filter((el) => !kept.some((k) => el.contains(k)))
+            : [body];
         for (const el of targets) (el as HTMLElement).inert = keys.size > 0;
     };
     const update = () => sync(isModal());
     update();
+    if (!document.body) document.addEventListener("DOMContentLoaded", update, { once: true, signal: ctx.signal });
     onChange(ctx, modal, update);
     ctx.signal.addEventListener("abort", () => sync(false));
     window.addEventListener("focusin", (e) => {
@@ -151,6 +155,7 @@ function pushPageAside(ctx: TangiTweak.RunCtx, name: string, modal: { open: bool
         apply();
     };
     update();
+    if (!document.body) document.addEventListener("DOMContentLoaded", update, { once: true, signal: ctx.signal });
     onChange(ctx, modal, update);
     window.addEventListener("resize", update, { signal: ctx.signal });
     ctx.signal.addEventListener("abort", () => { pushes.delete(key); apply(); });
@@ -208,6 +213,8 @@ function fitViewportWide(want: boolean) {
     }
     // already on: the layout may have changed (a resize, a palette docked elsewhere)
     if (fit.on) { later([document.body]); return; }
+    // no <body> yet (document start): pushPageAside calls again once it's parsed
+    if (!document.body) return;
     fit.on = true;
     fit.observer = new MutationObserver((records) =>
         later(records.flatMap((r) => [...r.addedNodes].filter((n): n is Element => n instanceof Element))));
