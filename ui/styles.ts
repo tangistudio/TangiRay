@@ -104,7 +104,8 @@ export const INTERCEPTOR_PALETTE_CSS = THEME_CSS + ENTITY_CSS + COMBOBOX_CSS + H
 .aip-badge.paused { background: var(--wt-yellow-bg); color: var(--wt-yellow); }
 .aip-switch { display: inline-block; flex: none; width: 24px; height: 14px; border-radius: 7px; background: var(--wt-border); position: relative; transition: background .15s; }
 .aip-root button.aip-star { flex: none; width: 16px; margin: 0 -4px 0 0; padding: 0; border: 0; background: transparent; color: var(--wt-text-faint); font-size: 13px; line-height: 1; cursor: pointer; visibility: hidden; }
-.aip-root [cmdk-item]:hover .aip-star, .aip-root [cmdk-item][data-selected="true"] .aip-star, .aip-root button.aip-star.on { visibility: visible; }
+/* not while the list is hidden behind an editor: a child's visibility: visible would show through */
+.aip-root:not(.aip-behind) [cmdk-item]:hover .aip-star, .aip-root:not(.aip-behind) [cmdk-item][data-selected="true"] .aip-star, .aip-root:not(.aip-behind) button.aip-star.on { visibility: visible; }
 .aip-root button.aip-star:hover { color: var(--wt-text); }
 .aip-root button.aip-star.on { color: var(--wt-yellow-strong); }
 .aip-switch.mixed { background: var(--wt-green-border); }
@@ -160,7 +161,8 @@ export const INTERCEPTOR_PALETTE_CSS = THEME_CSS + ENTITY_CSS + COMBOBOX_CSS + H
 .aip-rule-title input:focus { outline: none; border-color: var(--wt-accent); background: var(--wt-surface); }
 .aip-rule-title input.aip-name { flex: 1; min-width: 0; font-size: 15px; font-weight: 600; }
 .aip-rule-title input.aip-tags { flex: 0 1 200px; min-width: 80px; width: 200px; font-size: 12px; font-weight: normal; }
-.aip-form.aip-rule { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 12px; align-items: start; padding-top: 12px; }
+/* "When" and "Then" side by side while each has 340px, else "Then" below (a docked palette) */
+.aip-form.aip-rule { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 12px; align-items: start; align-content: start; padding-top: 12px; }
 .aip-form.aip-rule .aip-wide { grid-column: 1 / -1; }
 .aip-form .aip-card, .aip-rule-preview .aip-card { border: 1px solid var(--wt-border-soft); border-radius: 10px; padding: 10px 12px; gap: 10px; }
 .aip-form .aip-card h4 { margin: 0; }
@@ -219,6 +221,9 @@ export const INTERCEPTOR_PALETTE_CSS = THEME_CSS + ENTITY_CSS + COMBOBOX_CSS + H
 .aip-preview { padding: 4px 8px; background: var(--wt-fill-soft); border: 1px solid var(--wt-border-soft); border-radius: 6px; }
 .aip-mode .aip-kbd { margin-right: 4px; }
 .aip-row { display: flex; gap: 12px; }
+/* fields side by side while each has 200px, else one per line (a docked palette's narrow column) */
+.aip-row.aip-wrap { flex-wrap: wrap; row-gap: 8px; }
+.aip-form .aip-row.aip-wrap > label { flex: 1 1 200px; min-width: 0; }
 .aip-form .aip-check { display: flex; flex-direction: row; align-items: center; gap: 6px; color: var(--wt-text); }
 .aip-form .aip-pick { padding: 2px 6px; border-radius: 5px; cursor: pointer; }
 .aip-form .aip-pick:hover { background: var(--wt-fill-soft); }

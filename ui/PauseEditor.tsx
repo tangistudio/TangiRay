@@ -175,7 +175,7 @@ export function PauseEditor({ pause, seq, site, store, onBack, onDecided, sendRe
                 )}
                 {pause.stage === "request" && responding ? (
                     <>
-                        <div className="aip-row">
+                        <div className="aip-row aip-wrap">
                             <label>Status <StatusInput openOnFocus={false} value={mock.status} onChange={(n) => setMock({ ...mock, status: n })} /></label>
                             <label>Content-Type <input value={mock.mime} onChange={(e) => setMock({ ...mock, mime: e.target.value })} /></label>
                         </div>

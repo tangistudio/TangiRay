@@ -8,6 +8,8 @@
 
 TangiRay is a [TangiTweak](https://github.com/tangistudio/TangiTweak) script. Press **⌘'** (Ctrl+' elsewhere) on any page to open it.
 
+![TangiRay docked beside a page, listing its API calls with page and click breaks, and a POST request's body in the details panel](docs/screenshots/overview.png)
+
 ## Setup
 
 1. Install [TangiTweak](https://github.com/tangistudio/TangiTweak) in your browser.
@@ -24,6 +26,8 @@ Every `fetch`/XHR call in the tab, kept across navigations and reloads.
 - **Tidy up:** identical requests fold into one row; favourites can stay at the top.
 - **Make a rule:** ↵ or double-click a request.
 
+![The request list in the centred layout, with a failed request's response in the details panel](docs/screenshots/request-list.png)
+
 ## Rules
 
 A rule matches a [URL pattern](https://developer.mozilla.org/docs/Web/API/URL_Pattern_API) (`https://example.com/api/:team/items/*`, or `/api/*` on any origin), plus optionally the method, query params and request body.
@@ -38,6 +42,10 @@ A rule matches a [URL pattern](https://developer.mozilla.org/docs/Web/API/URL_Pa
 
 Tick **Remember** on a paused request or response to have its rule do the same from then on, without pausing. Among rules that change something, the first match decides.
 
+![The rule editor: a rule made from a failing request, set to answer it with a mocked JSON response](docs/screenshots/rule-editor.png)
+
+![A paused request, ready to be sent as is, edited, answered on the spot or blocked](docs/screenshots/paused-request.png)
+
 ## The ⋯ menu
 
 - **Settings**
@@ -49,6 +57,8 @@ Tick **Remember** on a paused request or response to have its rule do the same f
 - **Plugins**: each plugin for the page, with its on/off switch and its own switches
 - **Import rules… / Export rules…** as JSON
 - **Export**: the listed requests, or the one in the details panel, as HAR
+
+![The ⋯ menu with its Settings submenu open](docs/screenshots/menu.png)
 
 ## Plugins
 

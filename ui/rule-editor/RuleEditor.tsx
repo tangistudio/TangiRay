@@ -390,7 +390,7 @@ export function RuleEditor({ initial, store, page, prefs, onDone }: { initial: D
                     })()}
                     {d.choice === "mock" && (
                         <>
-                            <div className="aip-row">
+                            <div className="aip-row aip-wrap">
                                 <label>Status <StatusInput value={d.mock.status} onChange={(status) => update({ mock: { ...d.mock, status } })} /></label>
                                 <label>Content-Type <input value={d.mock.mime} onChange={(e) => update({ mock: { ...d.mock, mime: e.target.value } })} /></label>
                             </div>
