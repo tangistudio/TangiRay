@@ -5,7 +5,8 @@
     "main": "index.ts",
     "tangitweak": {
         "displayName": "TangiRay",
-        "icon": "logo.svg"
+        "icon": "logo.svg",
+        "updateURL": "https://github.com/tangistudio/TangiRay"
     },
     "dependencies": {
         "@codemirror/autocomplete": "6.20.4",

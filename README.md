@@ -1,51 +1,98 @@
-# TangiRay
+<p align="center"><img src="logo.svg" width="96" alt="TangiRay"></p>
 
-A [TangiTweak script](https://github.com/tangistudio/TangiTweak) to track and rewrite a tab's API calls, on any site. Press **⌘'** (Ctrl+' elsewhere) to open it. Site-specific knowledge comes from [plugins](#plugins); the [Atlas plugin](#atlas-plugin) is plugged in by default.
+<h1 align="center">TangiRay</h1>
 
-## What it does
+<p align="center">See, pause and rewrite a tab's API calls, on any site.</p>
 
-Track every `fetch`/XHR call in the tab (kept across navigations and reloads) and inspect or modify requests and responses. Folds repetitive requests, tracks `#` navigations and clicks on interactive controls, and exports the listed requests (in chronological order) or a single one as HAR, and rules as JSON. Rules match on a [URL pattern](https://developer.mozilla.org/docs/Web/API/URL_Pattern_API) (e.g. `https://example.com/api/:team/items/*`, or `/api/*` on any origin), method, query params and request content. Rules can **pause** a request (to send it edited or not, respond to it on the spot, or block it) or its response (to edit it), **mock** a response without sending the request (status, content type, body, optional delay), or **delay** requests; list-only rules **hide**, **favourite** (pin to top) or **fold** requests. Tick **Remember** on a paused request or response to have the rule do the same automatically, without pausing (switch it back to **Each time** in the rule editor). Delays of all matching rules add up; the first rule that changes something decides.
+<p align="center"><a href="https://github.com/tangistudio/TangiRay#tangitweak:install"><img src="https://img.shields.io/badge/TangiTweak-Install-00a35c?style=for-the-badge" alt="Install with TangiTweak"></a></p>
 
-TangiRay marks gaps of 5 seconds or more between consecutive recorded request starts and shows page URL changes, including fragments. When requests span pages, it also labels the initial page; page labels pin flush to the top across the full request-list width while scrolling. Time gaps are omitted where folded, filtered or pinned rows would make the timeline misleading.
-Hovering or arrowing through requests shows each one in the details panel; **click a request to pin it** there while you move through the list (click it again, or press Esc, to unpin). Enter or a double-click makes a rule from the request.
-Its **⋯** menu has **Settings** (hover it, or press →, for its submenu) for page breaks, recording and display of interactive-control clicks, automatic folding of identical requests (same method, URL and body; headers may differ), **Show favourites at the top** (on by default), **Show the end of long URLs** (cut long URLs at their start instead of their end, so IDs and query stay visible), **Hide query and hash** (show request and page URLs as their path only, and rules without their query conditions; hover for the full URL); **Plugins** for the site plugins working on the page: each one's on/off switch (applied from the next page load) and its own switches; and **Export**: the listed requests, or the one in the details panel (pinned, else selected), as HAR. Turn off favourites at the top to keep favourite requests in timeline order; the preference is kept across pages and restarts. Click markers identify the control type, including text fields and dropdowns. Explicit fold rules remain active when automatic folding is off. Click labels may contain page data; input values are not recorded.
-
-## Plugins
-
-A plugin teaches the interceptor about a site, on that site's pages only. It can:
-
-- patch more of the page (e.g. a WebSocket) and add log entries of its own, with their own list rows and details panel (only hide, fold and favourite rules apply to them, and HAR export skips them);
-- read the page's JSON responses, and answer the palette's calls from the page's memory;
-- name the entities in URLs (shown as capsules in place of ids), from the page's state or responses, and recognise unknown ids by the word before them;
-- add switches to **⋯ → Plugins**, sections to a request's details, minor headers and CSS.
-
-The interface is in [`plugin.ts`](plugin.ts). Plugins are listed in [`index.ts`](index.ts): switch one off in **⋯ → Plugins** (kept across pages and restarts), or unplug it by deleting its line in `plugins` (and its folder under `plugins/`, if you like). Each plugin sets the pages it works on in its own code. Without plugins, the interceptor knows nothing about any site in particular.
-
-Three plugins for MongoDB Atlas, each on Atlas' pages (dev, QA, prod and `localhost:8080`) and switched on and off in **⋯ → Plugins**:
-
-### Atlas: org, project and cluster names
-
-[`plugins/atlas-entities`](plugins/atlas-entities/atlas-entities.ts): org, project and cluster names, read from Atlas' Redux store and from API responses, shown in place of their ids in URLs; unknown ids after `groups/`, `orgId=`… are labelled by kind. Also folds away Atlas API headers rarely of interest (`x-java-version`, `x-mongodb-service-version`, `x-xgen-up-proto`).
-
-### Atlas: Data Explorer commands (CCS)
-
-[`plugins/atlas-ccs`](plugins/atlas-ccs/atlas-ccs.ts): the interceptor lists Data Explorer's MongoDB commands as `CCS` rows. Data Explorer (Compass Web) doesn't query clusters over HTTP: it sends MongoDB wire-protocol messages through one WebSocket to Atlas' **Cluster Connection Service** (CCS, `wss://cluster-connection.cloud.mongodb.com/ccs/<projectId>`), which forwards them to the cluster; the interceptor reads that WebSocket in the page. Each row shows the command, namespace, cluster host, status or error code, batch and write counts, sizes and browser-observed round-trip time, e.g. `find demo.orders · OK · 20 documents in first batch · 42ms`. The details panel also unfolds the whole command and reply documents (Extended JSON), kept in the page's memory like HTTP bodies and decoded only when shown. Handshakes, authentication and heartbeats are hidden unless **CCS handshakes, auth and heartbeats** is on (in **⋯ → Plugins**); hide, fold and favourite rules work on CCS rows (their URLs look like `mongodb://host:27017/demo/orders?command=find`), other rules and HAR export only cover HTTP requests. zlib-compressed messages (Atlas' `compressors=zlib`) are decompressed; snappy and zstd ones are listed but not decoded. Switching the plugin off stops recording from the next message and drops the documents kept so far.
-
-### Atlas: analytics Segment events
-
-[`plugins/atlas-analytics`](plugins/atlas-analytics/atlas-analytics.ts): Atlas' Segment/Heliotrope calls (`api.blue.mongodb.com`) decoded above their request body, the important parts first.
+TangiRay is a [TangiTweak](https://github.com/tangistudio/TangiTweak) script. Press **⌘'** (Ctrl+' elsewhere) on any page to open it.
 
 ## Setup
 
-Install [TangiTweak](https://github.com/tangistudio/TangiTweak) in your browser, then add this folder as a tweak (`package.json`'s `main` is the entry point, `index.ts`).
+1. Install [TangiTweak](https://github.com/tangistudio/TangiTweak) in your browser.
+2. Click **Install with TangiTweak** above and confirm. Updates come from this repository.
+
+To work on it locally, add this folder as a tweak in TangiTweak (the entry point is `index.ts`).
+
+## The request list
+
+Every `fetch`/XHR call in the tab, kept across navigations and reloads.
+
+- **Inspect:** hover or arrow through requests to see each one in the details panel. **Click** a request to pin it there while you move on (click again or Esc to unpin).
+- **Timeline:** page URL changes (with `#` fragments) and clicks on controls show as breaks; gaps of 5 s or more are marked.
+- **Tidy up:** identical requests fold into one row; favourites can stay at the top.
+- **Make a rule:** ↵ or double-click a request.
+
+## Rules
+
+A rule matches a [URL pattern](https://developer.mozilla.org/docs/Web/API/URL_Pattern_API) (`https://example.com/api/:team/items/*`, or `/api/*` on any origin), plus optionally the method, query params and request body.
+
+| Action | What it does |
+|---|---|
+| **Pause request** | Hold it to send it as is or edited, answer it on the spot, or block it. |
+| **Pause response** | Hold it to edit it before the page sees it. |
+| **Mock** | Answer without sending: status, content type, body, optional delay. |
+| **Delay** | Hold the request for a while; delays of matching rules add up. |
+| **Hide / Favourite / Fold** | Only change the list. |
+
+Tick **Remember** on a paused request or response to have its rule do the same from then on, without pausing. Among rules that change something, the first match decides.
+
+## The ⋯ menu
+
+- **Settings**
+  - **Show favourites at the top** (on by default)
+  - **Show the end of long URLs**: cut long URLs at the start, so IDs and query stay visible
+  - **Hide query and hash**: show URLs as their path only (hover for the full URL)
+  - **Page breaks**, **Click breaks** (input values are never recorded)
+  - **Fold identical requests**: same method, URL and body; fold rules apply either way
+- **Plugins**: each plugin for the page, with its on/off switch and its own switches
+- **Import rules… / Export rules…** as JSON
+- **Export**: the listed requests, or the one in the details panel, as HAR
+
+## Plugins
+
+Plugins add knowledge of a particular site, on its pages only. Switch one off in **⋯ → Plugins**, or unplug it by removing its line in [`index.ts`](index.ts). These are included:
+
+| Plugin | What it adds |
+|---|---|
+| **Atlas: org, project and cluster names** | Names in place of ids in URLs, from Atlas' Redux store and API responses; other ids labelled by kind (after `groups/`, `orgId=`…). Folds away a few rarely useful Atlas headers. |
+| **Atlas: Data Explorer commands (CCS)** | Data Explorer's MongoDB commands as `CCS` rows, e.g. `find demo.orders · OK · 20 documents in first batch · 42ms`, with the full command and reply documents in the details. |
+| **Atlas: analytics Segment events** | Segment/Heliotrope calls (`api.blue.mongodb.com`) decoded above the request body. |
+
+The Atlas plugins work on Atlas dev, QA, prod and `localhost:8080`.
+
+<details>
+<summary>More on CCS</summary>
+
+Data Explorer (Compass Web) doesn't query clusters over HTTP. It sends MongoDB wire-protocol messages through one WebSocket to Atlas' Cluster Connection Service (`wss://cluster-connection.cloud.mongodb.com/ccs/<projectId>`); the plugin reads that WebSocket in the page.
+
+- Handshakes, authentication and heartbeats are hidden unless **CCS handshakes, auth and heartbeats** is on.
+- Hide, fold and favourite rules work on CCS rows (their URLs look like `mongodb://host:27017/demo/orders?command=find`); other rules and HAR export cover HTTP only.
+- zlib-compressed messages are decoded; snappy and zstd ones are listed but not decoded.
+- Documents stay in the page's memory and are decoded only when shown. Switching the plugin off drops them.
+
+</details>
+
+<details>
+<summary>Writing a plugin</summary>
+
+The interface is in [`plugin.ts`](plugin.ts); each plugin sets the pages it works on. A plugin can:
+
+- patch more of the page (e.g. a WebSocket) and add its own log entries, with their own rows and details;
+- read the page's JSON responses, and answer the palette's calls from the page's memory;
+- name entities in URLs, and recognise unknown ids by the word before them;
+- add switches to **⋯ → Plugins**, sections to a request's details, minor headers and CSS.
+
+</details>
 
 ## Settings
 
 | Setting | Default | |
 |---|---|---|
-| `shortcut` | `Mod+'` | Opens the interceptor palette. |
-| `pages` | every `http`/`https` page | Where the interceptor runs. |
+| `shortcut` | `Mod+'` | Opens TangiRay. |
+| `pages` | every `http`/`https` page | Where TangiRay runs. |
 
 ## Privacy
 
-Interceptor rules and HAR exports can contain URLs, headers, request bodies and identifiers from the pages you use. Review them before sharing.
+Rules and HAR exports can contain URLs, headers, request bodies and identifiers from the pages you use, and click breaks show the labels of the controls you click. Review exports before sharing.
