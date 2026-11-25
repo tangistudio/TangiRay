@@ -1,0 +1,31 @@
+{
+    "name": "tangiray",
+    "version": "0.0.1-alpha",
+    "description": "Track every fetch/XHR call in the tab and inspect, pause, edit, mock or delay requests and responses with rules, on any site. Plugins add site-specific knowledge (MongoDB Atlas included).",
+    "main": "index.ts",
+    "tangitweak": {
+        "displayName": "TangiRay",
+        "icon": "logo.svg"
+    },
+    "dependencies": {
+        "@codemirror/autocomplete": "6.20.4",
+        "@codemirror/commands": "6.11.1",
+        "@codemirror/lang-json": "6.0.2",
+        "@codemirror/language": "6.13.1",
+        "@codemirror/lint": "6.9.7",
+        "@codemirror/search": "6.7.2",
+        "@codemirror/state": "6.7.6",
+        "@codemirror/view": "6.43.15",
+        "@lezer/highlight": "1.2.5",
+        "@redux-devtools/instrument": "3.0.0",
+        "@replit/codemirror-vscode-keymap": "6.0.2",
+        "bson": "7.3.4",
+        "cmdk": "1.1.1",
+        "fflate": "0.8.2",
+        "react-aria": "3.53.1",
+        "react-aria-components": "1.22.1",
+        "react-stately": "3.51.0",
+        "redux": "5.0.1",
+        "tangitweak": "^0.40.1-alpha"
+    }
+}
