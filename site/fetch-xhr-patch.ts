@@ -117,7 +117,9 @@ export function installSitePatches(ctx: TangiTweak.SiteCtx, site: SiteState, plu
     }
     const log = new RequestLog(events, () => [...parts].filter(([id]) => !isOff(id)).map(([, part]) => part), checkNavigation);
     patchFetch(ctx, site, journal, log);
-    patchXhr(ctx, site, journal, log);
+    const xhrProto = xhrPrototype();
+    if (xhrProto) patchXhr(ctx, xhrProto, site, journal, log);
+    else tweak.log("[tangiray] this page's XMLHttpRequest can't be patched: its XHR calls aren't logged");
     return {
         transaction: (method: string, urls: string[], startedAt: number, logId?: string) => journal.find(method, urls, startedAt, logId),
         transactionBody: (id: number, kind: "request" | "response", offset: number) => journal.body(id, kind, offset),
@@ -308,10 +310,29 @@ interface XhrInfo {
 
 const FAKED = ["readyState", "status", "statusText", "responseURL", "responseText", "response", "getResponseHeader", "getAllResponseHeaders"];
 
-function patchXhr(ctx: TangiTweak.SiteCtx, site: SiteState, journal: Journal, log: RequestLog) {
+const XHR_METHODS = ["open", "setRequestHeader", "abort", "send"] as const;
+
+/**
+ * The prototype that holds the XHR methods the page's requests go through. A page (or a library on
+ * it) may have swapped `XMLHttpRequest` for a wrapper whose own `prototype` lacks them, e.g. a
+ * constructor that returns the original XHR: then they're on its instances' prototype.
+ */
+function xhrPrototype(): XMLHttpRequest | undefined {
+    if (typeof XMLHttpRequest !== "function") return undefined;
+    const hasAll = (p: unknown): p is XMLHttpRequest =>
+        !!p && XHR_METHODS.every((m) => typeof (p as Record<string, unknown>)[m] === "function");
+    if (hasAll(XMLHttpRequest.prototype)) return XMLHttpRequest.prototype;
+    try {
+        const p: unknown = Object.getPrototypeOf(new XMLHttpRequest());
+        return hasAll(p) ? p : undefined;
+    } catch {
+        return undefined;
+    }
+}
+
+function patchXhr(ctx: TangiTweak.SiteCtx, proto: XMLHttpRequest, site: SiteState, journal: Journal, log: RequestLog) {
     const info = new WeakMap<XMLHttpRequest, XhrInfo>();
     const internal = new WeakSet<XMLHttpRequest>();
-    const proto = XMLHttpRequest.prototype;
     let open!: XMLHttpRequest["open"];
     let setHeader!: XMLHttpRequest["setRequestHeader"];
     let send!: XMLHttpRequest["send"];
